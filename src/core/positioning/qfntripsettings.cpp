@@ -106,7 +106,9 @@ QfNtripSettings QfNtripSettings::fromMap( const QVariantMap &settings )
   ntripSettings.setPassword( settings.value( QStringLiteral( "password" ) ).toString() );
   ntripSettings.setForwardNmeaSentences( settings.value( QStringLiteral( "forwardNmeaSentences" ), true ).toBool() );
   const QString sourceCrs = settings.value( QStringLiteral( "sourceCrs" ), QStringLiteral( "EPSG:4326" ) ).toString();
-  ntripSettings.setSourceCrs( QgsCoordinateReferenceSystem::fromUserInput( sourceCrs ) );
+  QgsCoordinateReferenceSystem crs;
+  crs.createFromUserInput( sourceCrs );
+  ntripSettings.setSourceCrs( crs );
   return ntripSettings;
 }
 
@@ -123,6 +125,6 @@ QDataStream &operator>>( QDataStream &stream, QfNtripSettings &settings )
   QString sourceCrs;
   stream >> settings.mHost >> settings.mPort >> settings.mProtocol >> settings.mMountPoint
          >> settings.mUsername >> settings.mPassword >> settings.mForwardNmeaSentences >> sourceCrs;
-  settings.mSourceCrs = QgsCoordinateReferenceSystem::fromUserInput( sourceCrs.isEmpty() ? QStringLiteral( "EPSG:4326" ) : sourceCrs );
+  settings.mSourceCrs.createFromUserInput( sourceCrs.isEmpty() ? QStringLiteral( "EPSG:4326" ) : sourceCrs );
   return stream;
 }
