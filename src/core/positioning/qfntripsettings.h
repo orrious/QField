@@ -18,6 +18,7 @@
 
 #include <QObject>
 #include <QString>
+#include <qgscoordinatereferencesystem.h>
 
 
 /**
@@ -37,6 +38,7 @@ class QfNtripSettings
     Q_PROPERTY( QString username READ username )
     Q_PROPERTY( QString password READ password )
     Q_PROPERTY( bool forwardNmeaSentences READ forwardNmeaSentences )
+    Q_PROPERTY( QgsCoordinateReferenceSystem sourceCrs READ sourceCrs )
 
   public:
     //! NTRIP server protocol
@@ -100,6 +102,12 @@ class QfNtripSettings
     //! Sets whether NMEA sentences will be forwarded to the NTRIP server
     void setForwardNmeaSentences( bool forwardNmeaSentences );
 
+    //! Returns the CRS used by the correction service for receiver positions
+    QgsCoordinateReferenceSystem sourceCrs() const { return mSourceCrs; }
+
+    //! Sets the CRS used by the correction service for receiver positions
+    void setSourceCrs( const QgsCoordinateReferenceSystem &sourceCrs );
+
     //! Return a map of settings
     Q_INVOKABLE QVariantMap toMap() const;
 
@@ -116,6 +124,7 @@ class QfNtripSettings
     QString mPassword;
 
     bool mForwardNmeaSentences = true;
+    QgsCoordinateReferenceSystem mSourceCrs = QgsCoordinateReferenceSystem::fromEpsgId( 4326 );
 
     friend QDataStream &operator<<( QDataStream &stream, const QfNtripSettings &settings );
     friend QDataStream &operator>>( QDataStream &stream, QfNtripSettings &settings );

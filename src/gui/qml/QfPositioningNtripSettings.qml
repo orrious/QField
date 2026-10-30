@@ -278,6 +278,22 @@ QfPopup {
         }
 
         Label {
+          text: qsTr("Correction CRS")
+          font: QfTheme.defaultFont
+          color: QfTheme.mainTextColor
+          wrapMode: Text.WordWrap
+          Layout.fillWidth: true
+        }
+
+        QfTextField {
+          id: ntripSourceCrsTextField
+          Layout.fillWidth: true
+          font: QfTheme.defaultFont
+          placeholderText: "EPSG:4326"
+          inputMethodHints: Qt.ImhNoPredictiveText | Qt.ImhNoAutoUppercase
+        }
+
+        Label {
           id: ntripMountPointsDetails
           visible: text !== ""
           font: QfTheme.defaultFont
@@ -385,6 +401,7 @@ QfPopup {
     ntripPasswordTextField.text = ntripSettings.password;
     ntripMountPointComboBox.editText = ntripSettings.mountPoint;
     ntripForwardNmeaSentencesSwitch.checked = ntripSettings.forwardNmeaSentences;
+    ntripSourceCrsTextField.text = ntripSettings.sourceCrs.authid;
   }
 
   function createSettingsMap() {
@@ -395,7 +412,8 @@ QfPopup {
       "username": ntripUsernameTextField.text,
       "password": ntripPasswordTextField.text,
       "mountPoint": ntripMountPointComboBox.editText,
-      "forwardNmeaSentences": ntripForwardNmeaSentencesSwitch.checked
+      "forwardNmeaSentences": ntripForwardNmeaSentencesSwitch.checked,
+      "sourceCrs": ntripSourceCrsTextField.text
     };
   }
 }

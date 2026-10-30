@@ -30,7 +30,8 @@ bool QfNtripSettings::operator==( const QfNtripSettings &other ) const
          mHost == other.mHost &&
          mMountPoint == other.mMountPoint &&
          mUsername == other.mUsername &&
-         mPassword == other.mPassword;
+         mPassword == other.mPassword &&
+         mSourceCrs == other.mSourceCrs;
   // clang-format on
 }
 
@@ -75,6 +76,11 @@ void QfNtripSettings::setForwardNmeaSentences( bool forwardNmeaSentences )
   mForwardNmeaSentences = forwardNmeaSentences;
 }
 
+void QfNtripSettings::setSourceCrs( const QgsCoordinateReferenceSystem &sourceCrs )
+{
+  mSourceCrs = sourceCrs;
+}
+
 QVariantMap QfNtripSettings::toMap() const
 {
   QVariantMap settings;
@@ -85,6 +91,7 @@ QVariantMap QfNtripSettings::toMap() const
   settings[QStringLiteral( "username" )] = mUsername;
   settings[QStringLiteral( "password" )] = mPassword;
   settings[QStringLiteral( "forwardNmeaSentences" )] = mForwardNmeaSentences;
+  settings[QStringLiteral( "sourceCrs" )] = mSourceCrs.authid();
   return settings;
 }
 
@@ -98,18 +105,24 @@ QfNtripSettings QfNtripSettings::fromMap( const QVariantMap &settings )
   ntripSettings.setUsername( settings.value( QStringLiteral( "username" ) ).toString() );
   ntripSettings.setPassword( settings.value( QStringLiteral( "password" ) ).toString() );
   ntripSettings.setForwardNmeaSentences( settings.value( QStringLiteral( "forwardNmeaSentences" ), true ).toBool() );
+  const QString sourceCrs = settings.value( QStringLiteral( "sourceCrs" ), QStringLiteral( "EPSG:4326" ) ).toString();
+  ntripSettings.setSourceCrs( QgsCoordinateReferenceSystem::fromUserInput( sourceCrs ) );
   return ntripSettings;
 }
 
 QDataStream &operator<<( QDataStream &stream, const QfNtripSettings &settings )
 {
-  return stream << settings.mHost << settings.mPort << settings.mProtocol << settings.mMountPoint
-                << settings.mUsername << settings.mPassword << settings.mForwardNmeaSentences;
+  stream << settings.mHost << settings.mPort << settings.mProtocol << settings.mMountPoint
+         << settings.mUsername << settings.mPassword << settings.mForwardNmeaSentences << settings.mSourceCrs.authid();
+  return stream;
 }
 
 //cppcheck-suppress constParameter
 QDataStream &operator>>( QDataStream &stream, QfNtripSettings &settings )
 {
-  return stream >> settings.mHost >> settings.mPort >> settings.mProtocol >> settings.mMountPoint
-         >> settings.mUsername >> settings.mPassword >> settings.mForwardNmeaSentences;
+  QString sourceCrs;
+  stream >> settings.mHost >> settings.mPort >> settings.mProtocol >> settings.mMountPoint
+         >> settings.mUsername >> settings.mPassword >> settings.mForwardNmeaSentences >> sourceCrs;
+  settings.mSourceCrs = QgsCoordinateReferenceSystem::fromUserInput( sourceCrs.isEmpty() ? QStringLiteral( "EPSG:4326" ) : sourceCrs );
+  return stream;
 }

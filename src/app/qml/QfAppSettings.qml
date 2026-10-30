@@ -1319,13 +1319,44 @@ Page {
                       const modelIndex = positioningDeviceModel.index(currentIndex, 0);
                       positioningSettings.positioningDevice = positioningDeviceModel.data(modelIndex, QfPositioningDeviceModel.DeviceId);
                       positioningSettings.positioningDeviceName = positioningDeviceModel.data(modelIndex, QfPositioningDeviceModel.DeviceName);
+                      positioningDeviceCrsTextField.text = positioningSettings.positioningDeviceCrsOverrides[positioningSettings.positioningDevice] || "EPSG:4326";
                     }
                   }
 
                   Component.onCompleted: {
                     currentIndex = positioningDeviceModel.findIndexFromDeviceId(positioningSettings.positioningDevice);
+                    positioningDeviceCrsTextField.text = positioningSettings.positioningDeviceCrsOverrides[positioningSettings.positioningDevice] || "EPSG:4326";
                     loaded = true;
                   }
+                }
+              }
+
+              Label {
+                text: qsTr("Device datum / CRS")
+                font: QfTheme.defaultFont
+                color: QfTheme.mainTextColor
+                wrapMode: Text.WordWrap
+                Layout.fillWidth: true
+                Layout.columnSpan: 2
+              }
+
+              QfTextField {
+                id: positioningDeviceCrsTextField
+                Layout.fillWidth: true
+                Layout.columnSpan: 2
+                font: QfTheme.defaultFont
+                placeholderText: "EPSG:4326"
+                inputMethodHints: Qt.ImhNoPredictiveText | Qt.ImhNoAutoUppercase
+
+                onEditingFinished: {
+                  const overrides = Object.assign({}, positioningSettings.positioningDeviceCrsOverrides);
+                  const crs = text.trim();
+                  if (crs === "" || crs === "EPSG:4326") {
+                    delete overrides[positioningSettings.positioningDevice];
+                  } else {
+                    overrides[positioningSettings.positioningDevice] = crs;
+                  }
+                  positioningSettings.positioningDeviceCrsOverrides = overrides;
                 }
               }
 

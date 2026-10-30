@@ -17,6 +17,7 @@ Settings {
 
   property string positioningDevice: ""
   property string positioningDeviceName: qsTr("Internal device")
+  property var positioningDeviceCrsOverrides: ({})
   property int elevationCorrectionMode: QfPositioning.ElevationCorrectionMode.None
   property bool logging: false
 

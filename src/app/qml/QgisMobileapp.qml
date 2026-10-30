@@ -387,6 +387,7 @@ ApplicationWindow {
     property real bearingTrueNorth: 0.0
 
     coordinateTransformer: CoordinateTransformer {
+      sourceCrs: positionSource.enableNtrip ? positionSource.ntripSettings.sourceCrs : QfCoordinateReferenceSystemUtils.fromDescription(positioningSettings.positioningDeviceCrsOverrides[positioningSettings.positioningDevice] || "EPSG:4326")
       destinationCrs: mapCanvas.mapSettings.destinationCrs
       transformContext: qgisProject ? qgisProject.transformContext : QfCoordinateReferenceSystemUtils.emptyTransformContext()
       deltaZ: 0
